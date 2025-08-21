@@ -29,7 +29,6 @@ This document contains the history of AI assistant interactions during the devel
 **Assistant**: Fixed:
 
 - Keyboard avoiding behavior
-- FlatList scrolling on iOS
 - Input field positioning
 - Message history management
 
@@ -42,7 +41,6 @@ This document contains the history of AI assistant interactions during the devel
 - Comprehensive README.md
 - Architecture documentation
 - Setup instructions
-- Future improvements list
 
 ## Final Testing and Delivery
 

@@ -68,7 +68,6 @@ export async function aiSuggestProducts({ query, catalog, apiKey }: params) {
     }
   }
 
-  // fallback if no API key
   return {
     query_understanding: "API key not configured",
     recommendations: [],

@@ -1,13 +1,10 @@
+import { COLORS } from "@/services/constants";
 import MaskedView from "@react-native-masked-view/masked-view";
 import React from "react";
-import { Dimensions, StyleSheet, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
 
-const { width } = Dimensions.get("window");
-
-type Props = {};
-
-const AnimatedText = (props: Props) => {
+const AnimatedText = () => {
   return (
     <View style={{ flex: 1 }}>
       <MaskedView
@@ -56,8 +53,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   gradient: {
-    experimental_backgroundImage:
-      "linear-gradient(90deg,rgba(2, 0, 36, 1) 0%, #26aed0 35%, #001aff 100%)",
+    experimental_backgroundImage: `linear-gradient(90deg,${COLORS.marine} 40%,${COLORS.aqua} 80%)`,
     width: "100%",
     height: "100%",
   },

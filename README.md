@@ -10,6 +10,12 @@ This is an [Expo](https://expo.dev) project created with [`create-expo-app`](htt
    npm install
    ```
 
+   # To regenerate native folders (if needed)
+
+   ```bash
+   npx expo prebuild
+   ```
+
 2. Start the app
 
    ```bash
@@ -116,4 +122,3 @@ ProductAdvisor/
    EXPO_PUBLIC_GEMINI_API_KEY=your_api_key
    ```
 4. Run the app: `npx expo start`
-

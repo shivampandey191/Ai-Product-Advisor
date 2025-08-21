@@ -1,7 +1,10 @@
 import { PRODUCT_CATALOG } from "@/data/catalog";
 import { aiSuggestProducts } from "@/services/ai";
+import { COLORS } from "@/services/constants";
 import AntDesign from "@expo/vector-icons/AntDesign";
-import { useRef, useState } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as Haptics from "expo-haptics";
+import { useEffect, useRef, useState } from "react";
 import {
   FlatList,
   KeyboardAvoidingView,
@@ -32,6 +35,33 @@ export default function InputArea() {
     Array<{ user: string; ai: any | null; loading?: boolean }>
   >([]);
 
+  useEffect(() => {
+    loadChatHistory();
+  }, []);
+
+  useEffect(() => {
+    saveChatHistory();
+  }, [history]);
+
+  const loadChatHistory = async () => {
+    try {
+      const savedHistory = await AsyncStorage.getItem("chatHistory");
+      if (savedHistory !== null) {
+        setHistory(JSON.parse(savedHistory));
+      }
+    } catch (error) {
+      console.error("Error loading chat history:", error);
+    }
+  };
+
+  const saveChatHistory = async () => {
+    try {
+      await AsyncStorage.setItem("chatHistory", JSON.stringify(history));
+    } catch (error) {
+      console.error("Error saving chat history:", error);
+    }
+  };
+
   async function handleQuery(query: string) {
     setHistory((prev) => [...prev, { user: query, ai: null, loading: true }]);
 
@@ -41,9 +71,6 @@ export default function InputArea() {
         catalog: PRODUCT_CATALOG,
         apiKey,
       });
-
-      console.log("result---", r);
-
       setHistory((prev) => {
         const newHistory = [...prev];
         newHistory[newHistory.length - 1] = {
@@ -69,6 +96,7 @@ export default function InputArea() {
 
   const handleSend = () => {
     if (!text.trim()) return;
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     setSending(true);
     handleQuery(text.trim());
 
@@ -81,18 +109,14 @@ export default function InputArea() {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.white }}>
       <KeyboardAvoidingView
         style={{ flex: 1 }}
         behavior={Platform.OS === "ios" ? "padding" : "height"}
-        keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 50} // adjust offset for iOS notch
       >
         <View style={styles.container}>
-          {/* Main Content Area */}
           <View style={styles.contentContainer}>
-            {history.length === 0 ? (
-              <AnimatedText />
-            ) : (
+            {history.length ? (
               <FlatList
                 data={history}
                 keyExtractor={(_, i) => i.toString()}
@@ -106,21 +130,24 @@ export default function InputArea() {
                   flatListRef.current?.scrollToEnd({ animated: true });
                 }}
                 onLayout={() => {
-                  flatListRef.current?.scrollToEnd({ animated: true });
+                  setTimeout(() => {
+                    flatListRef.current?.scrollToEnd({ animated: true });
+                  }, 50);
                 }}
                 ref={flatListRef}
               />
+            ) : (
+              <AnimatedText />
             )}
           </View>
 
-          {/* Input Footer */}
           <View style={styles.footer}>
             <TextInput
               ref={ref}
               style={styles.input}
               placeholder="Ask..."
               value={text}
-              placeholderTextColor={"#4e5e76"}
+              placeholderTextColor={COLORS.marine}
               onBlur={() => setIsFocused(false)}
               onFocus={() => setIsFocused(true)}
               onChangeText={(t) => setText(t)}
@@ -169,19 +196,19 @@ const styles = StyleSheet.create({
   },
   flatListContent: {
     padding: 12,
-    paddingBottom: 90, // space for footer
+    paddingBottom: 80,
   },
   input: {
     flex: 1,
     height: 50,
     borderWidth: 0.8,
-    borderColor: "#4e5e76",
+    borderColor: COLORS.marine,
     borderRadius: 25,
     paddingHorizontal: 20,
     fontSize: 16,
   },
   sendButton: {
-    backgroundColor: "#3b82f6",
+    backgroundColor: COLORS.marine,
     width: 50,
     height: 50,
     borderRadius: 25,
@@ -192,12 +219,9 @@ const styles = StyleSheet.create({
   footer: {
     flexDirection: "row",
     alignItems: "center",
-    padding: 8,
-    backgroundColor: "#fff",
-    shadowColor: "#000",
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
-    elevation: 2,
-    gap: 10,
+    paddingHorizontal: 8,
+    paddingBottom: 8,
+    backgroundColor: COLORS.white,
+    gap: 8,
   },
 });
